@@ -1,0 +1,70 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h2 class="text-2xl font-bold text-gray-800">Data Mahasiswa</h2>
+    <a href="/mahasiswa/create" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-semibold shadow-sm">
+      + Tambah
+    </a>
+  </div>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="bg-green-500 text-green p-3 rounded-lg font-medium shadow-sm">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-6 py-4 font-bold text-gray-700 w-20">No</th>
+            <th class="px-6 py-4 font-bold text-gray-700">Nama</th>
+            <th class="px-6 py-4 font-bold text-gray-700 text-right">NIM</th>
+            <th class="px-6 py-4 font-bold text-gray-700 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 bg-white">
+          <% if (typeof mahasiswa !== 'undefined' && mahasiswa.length > 0) { %>
+            <% mahasiswa.forEach((m, index) => { %>
+              <tr class="hover:bg-gray-50 transition">
+                <td class="px-6 py-4 text-gray-600"><%= index + 1 %></td>
+                <td class="px-6 py-4 text-gray-800 font-medium"><%= m.nama %></td>
+                <td class="px-6 py-4 text-gray-600 text-right"><%= m.nim %></td>
+                <td class="px-6 py-4 text-center space-x-3">
+                  <a href="/mahasiswa/edit/<%= m.id %>" class="text-blue-600 hover:text-blue-800 font-medium">Edit</a>
+                  <button onclick="confirmDelete('<%= m.id %>')" class="text-red-600 hover:text-red-800 font-medium">Hapus</button>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="4" class="px-6 py-10 text-center text-gray-400 italic text-sm">Belum ada data mahasiswa.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function confirmDelete(id) {
+  Swal.fire({
+    title: 'Yakin?',
+    text: "Data akan dihapus permanen!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Ya, hapus!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Mengarahkan ke route hapus jika diklik "Ya, hapus!"
+      window.location.href = `/mahasiswa/delete/${id}`;
+    }
+  })
+}
+</script>

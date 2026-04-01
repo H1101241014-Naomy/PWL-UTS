@@ -1,0 +1,9 @@
+{ 
+    "name": "Bun MySQL Dev",
+"dockerComposeFile": "docker-compose.yml",
+"service": "app",
+"workspaceFolder": "/workspace",
+"forwardPorts": [3000, 8080],
+"postCreateCommand": "npm install -g bun && bun install"
+
+}
