@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    // Environment setup & latest features
+    // Environment setup
     "lib": ["ESNext"],
     "target": "ESNext",
     "module": "Preserve",
@@ -14,6 +14,9 @@
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
+    // Node environment (PENTING)
+    "types": ["node"],
+
     // Best practices
     "strict": true,
     "skipLibCheck": true,
@@ -21,7 +24,7 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
 
-    // Some stricter flags (disabled by default)
+    // Optional
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false

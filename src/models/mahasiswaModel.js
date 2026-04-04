@@ -1,21 +1,64 @@
-let mahasiswa = [
-{ id: 1, nama: "Budi", nim: "12345" },
-];
-export const getAll = () => mahasiswa;
-export const getById = (id) =>
-mahasiswa.find((m) => m.id == id);
-export const create = (data) => {
-const newData = {
-id: Date.now(),
-...data,
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient(); 
+
+export const getAll = async () => {
+    try {
+        return await prisma.mahasiswa.findMany();
+    } catch (error) {
+        console.error("Gagal mengambil data:", error);
+        return [];
+    }
 };
-mahasiswa.push(newData);
+
+
+export const getById = async (id) => {
+    try {
+        return await prisma.mahasiswa.findUnique({
+            where: { id: Number(id) },
+        });
+    } catch (error) {
+        console.error(`Gagal mengambil data ID ${id}:`, error);
+        return null;
+    }
 };
-export const update = (id, data) => {
-mahasiswa = mahasiswa.map((m) =>
-m.id == id ? { ...m, ...data } : m
-);
+
+export const create = async (data) => {
+    try {
+        return await prisma.mahasiswa.create({
+            data: {
+                nama: data.nama,
+                nim: data.nim,
+            },
+        });
+    } catch (error) {
+        console.error("Gagal menambah mahasiswa:", error);
+        throw error;
+    }
 };
-export const remove = (id) => {
-mahasiswa = mahasiswa.filter((m) => m.id != id);
+
+
+export const update = async (id, data) => {
+    try {
+        return await prisma.mahasiswa.update({
+            where: { id: Number(id) },
+            data: {
+                nama: data.nama,
+                nim: data.nim,
+            },
+        });
+    } catch (error) {
+        console.error(`Gagal memperbarui ID ${id}:`, error);
+        throw error;
+    }
+};
+
+export const remove = async (id) => {
+    try {
+        return await prisma.mahasiswa.delete({
+            where: { id: Number(id) },
+        });
+    } catch (error) {
+        console.error(`Gagal menghapus ID ${id}:`, error);
+        throw error;
+    }
 };
