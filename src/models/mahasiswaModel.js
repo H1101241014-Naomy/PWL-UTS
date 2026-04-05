@@ -1,64 +1,42 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient(); 
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
+// Ambil semua data dari Tabel Mahasiswa di MySQL
 export const getAll = async () => {
-    try {
-        return await prisma.mahasiswa.findMany();
-    } catch (error) {
-        console.error("Gagal mengambil data:", error);
-        return [];
-    }
+    return await prisma.mahasiswa.findMany();
 };
 
-
+// Ambil satu data berdasarkan ID
 export const getById = async (id) => {
-    try {
-        return await prisma.mahasiswa.findUnique({
-            where: { id: Number(id) },
-        });
-    } catch (error) {
-        console.error(`Gagal mengambil data ID ${id}:`, error);
-        return null;
-    }
+    return await prisma.mahasiswa.findUnique({
+        where: { id: Number(id) }
+    });
 };
 
+// Simpan data baru ke MySQL
 export const create = async (data) => {
-    try {
-        return await prisma.mahasiswa.create({
-            data: {
-                nama: data.nama,
-                nim: data.nim,
-            },
-        });
-    } catch (error) {
-        console.error("Gagal menambah mahasiswa:", error);
-        throw error;
-    }
+    return await prisma.mahasiswa.create({
+        data: {
+            nama: data.nama,
+            nim: data.nim,
+        }
+    });
 };
 
-
+// Update data di MySQL
 export const update = async (id, data) => {
-    try {
-        return await prisma.mahasiswa.update({
-            where: { id: Number(id) },
-            data: {
-                nama: data.nama,
-                nim: data.nim,
-            },
-        });
-    } catch (error) {
-        console.error(`Gagal memperbarui ID ${id}:`, error);
-        throw error;
-    }
+    return await prisma.mahasiswa.update({
+        where: { id: Number(id) },
+        data: {
+            nama: data.nama,
+            nim: data.nim,
+        }
+    });
 };
 
+// Hapus data dari MySQL
 export const remove = async (id) => {
-    try {
-        return await prisma.mahasiswa.delete({
-            where: { id: Number(id) },
-        });
-    } catch (error) {
-        console.error(`Gagal menghapus ID ${id}:`, error);
-        throw error;
-    }
+    return await prisma.mahasiswa.delete({
+        where: { id: Number(id) }
+    });
 };

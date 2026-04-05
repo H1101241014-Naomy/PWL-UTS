@@ -1,81 +1,95 @@
-import * as mahasiswaModel from "../models/mahasiswaModel.js";
 import { render } from "../config/viewEngine";
+import * as model from "../models/mahasiswaModel";
 
-/**
- * 1. Menampilkan Daftar Mahasiswa
- * Mengambil data dari Model dan merender ke views/mahasiswa/index.ejs
- */
+// 1. LIST (Menampilkan Semua Data)
 export const index = async (c) => {
-    try {
-        const data = await mahasiswaModel.getAll();
-        const html = await render("mahasiswa/index", { 
-            mahasiswa: data, 
-            title: "Daftar Mahasiswa" 
-        }, c.req.raw);
-        
-        return c.html(html);
-    } catch (error) {
-        console.error("Error Index:", error);
-        return c.text("Gagal memuat data mahasiswa", 500);
-    }
+    const data = await model.getAll(); 
+    const success = c.req.query("success");
+    const error = c.req.query("error");
+    return c.html(
+        await render("mahasiswa/index", {
+            title: "Data Mahasiswa",
+            mahasiswa: data,
+            success,
+            error,
+        }, c)
+    );
 };
 
-/**
- * 2. Menampilkan Form Tambah Mahasiswa
- * Merender file views/mahasiswa/create.ejs
- */
+// 2. FORM CREATE (Menampilkan Form Tambah)
 export const createForm = async (c) => {
-    const html = await render("mahasiswa/create", { 
-        title: "Tambah Mahasiswa",
-        error: null // Set null agar tidak error saat pertama kali buka
-    }, c.req.raw);
-    return c.html(html);
+    const error = c.req.query("error"); // Biar pesan error muncul di form
+    return c.html(
+        await render("mahasiswa/create", {
+            title: "Tambah Mahasiswa",
+            error,
+        }, c)
+    );
 };
 
-/**
- * 3. Proses Simpan Data (POST)
- * Menangani input dari form dan mengecek NIM duplikat
- */
+// 3. STORE (Proses Simpan Data - DENGAN TRY CATCH)
 export const store = async (c) => {
-    try {
-        // Ambil data dari inputan Form
-        const body = await c.req.parseBody(); 
-        
-        // Panggil fungsi create di Model
-        await mahasiswaModel.create(body);
-        
-        // Jika berhasil, arahkan kembali ke halaman daftar
-        return c.redirect("/mahasiswa");
+    const body = await c.req.parseBody();
+    
+    if (!body.nama || !body.nim) {
+        return c.redirect("/mahasiswa/create?error=Semua field wajib diisi");
+    }
 
-    } catch (error) {
-        // Jika NIM Duplikat (Error Prisma P2002)
-        if (error.code === 'P2002') {
-            const html = await render("mahasiswa/create", { 
-                title: "Tambah Mahasiswa",
-                error: "Gagal! NIM sudah terdaftar, gunakan NIM lain.",
-                oldData: await c.req.parseBody() 
-            }, c.req.raw);
-            return c.html(html);
+    try {
+        await model.create({
+            nama: body.nama,
+            nim: body.nim,
+        });
+        return c.redirect("/mahasiswa?success=Data berhasil ditambahkan");
+    } catch (err) {
+        // Jika NIM kembar, Prisma akan melempar error code 'P2002'
+        if (err.code === 'P2002') {
+            return c.redirect("/mahasiswa/create?error=NIM sudah terdaftar! Gunakan NIM lain.");
         }
-        
-        console.error("Error Store:", error);
-        return c.text("Terjadi kesalahan server saat menyimpan data", 500);
+        return c.redirect("/mahasiswa/create?error=Terjadi kesalahan pada database");
     }
 };
 
-/**
- * 4. Proses Hapus Data
- * Menggunakan fungsi remove dari mahasiswaModel
- */
-export const destroy = async (c) => {
-    try {
-        const id = c.req.param('id');
-        // Pastikan di model kamu namanya 'remove'
-        await mahasiswaModel.remove(id); 
-        
-        return c.redirect("/mahasiswa");
-    } catch (error) {
-        console.error("Error Delete:", error);
-        return c.text("Gagal menghapus data", 500);
+// 4. FORM EDIT (Menampilkan Form Edit)
+export const editForm = async (c) => {
+    const id = c.req.param("id");
+    const error = c.req.query("error");
+    const data = await model.getById(id);
+    return c.html(
+        await render("mahasiswa/edit", {
+            title: "Edit Mahasiswa",
+            mhs: data, // Sesuaikan dengan variabel di file edit.ejs kamu
+            error,
+        }, c)
+    );
+};
+
+// 5. UPDATE (Proses Update Data - DENGAN TRY CATCH)
+export const updateData = async (c) => {
+    const id = c.req.param("id");
+    const body = await c.req.parseBody();
+    
+    if (!body.nama || !body.nim) {
+        return c.redirect(`/mahasiswa/edit/${id}?error=Field tidak boleh kosong`);
     }
+
+    try {
+        await model.update(id, {
+            nama: body.nama,
+            nim: body.nim,
+        });
+        return c.redirect("/mahasiswa?success=Data berhasil diupdate");
+    } catch (err) {
+        if (err.code === 'P2002') {
+            return c.redirect(`/mahasiswa/edit/${id}?error=NIM sudah digunakan mahasiswa lain!`);
+        }
+        return c.redirect(`/mahasiswa/edit/${id}?error=Gagal mengupdate data`);
+    }
+};
+
+// 6. DELETE (Proses Hapus Data)
+export const destroy = async (c) => {
+    const id = c.req.param("id");
+    await model.remove(id);
+    return c.redirect("/mahasiswa?success=Data berhasil dihapus");
 };

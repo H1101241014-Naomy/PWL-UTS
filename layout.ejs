@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+<%= title %>
+</title>
+<link href="/css/output.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100">
+<!-- WRAPPER -->🔷
+<div class="flex h-screen overflow-hidden">
+<!-- SIDEBAR -->🔷
+<aside id="sidebar"
+class="bg-blue-700 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform
+-translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+<h2 class="text-2xl font-bold text-center">My App</h2>
+<nav>
+<p class="text-xs text-red-200">PATH: <%= currentPath %>
+</p>
+<a href="/" class="block py-2 px-4 rounded
+<%= currentPath === '/' ? 'bg-blue-900' : 'hover:bg-blue-600' %>">
+📊 Dashboard
+</a>
+<!-- Dropdown Master -->
+<div class="mt-2">
+<button onclick="toggleMenu()" class="w-full text-left py-2 px-4 rounded hover:bg-blue-
+600">
+📁 Master
+</button>
+<div id="submenu"
+class="<%= currentPath.includes('/mahasiswa') ? '' : 'hidden' %> ml-4 mt-2 space-y-2">
+<a href="/mahasiswa" class="block py-2 px-4 rounded
+<%= currentPath.includes('/mahasiswa') ? 'bg-blue-900' : 'hover:bg-blue-600' %>">
+👨🎓 Mahasiswa
+</a>
+</div>
+</div>
+</nav>
+</aside>
+<!-- MAIN CONTENT -->🔷
+<div class="flex-1 flex flex-col">
+<!-- NAVBAR -->🔷
+<header class="bg-white shadow p-4 flex justify-between items-center">
+<!-- Mobile Menu Button -->
+<button class="md:hidden text-gray-700" onclick="toggleSidebar()">
+☰
+</button>
+<h1 class="font-bold text-lg">
+<%= title %>
+</h1>
+<!-- Profile -->
+<div class="relative">
+<button onclick="toggleProfile()" class="bg-gray-200 px-4 py-2 rounded-lg">
+👤 Profil
+</button>
+<div id="profileMenu" class="hidden absolute right-0 mt-2 bg-white shadow rounded w-
+40">
+<a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+<a href="#" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
+</div>
+</div>
+</header>
+<!-- CONTENT -->🔷
+<main class="p-6 flex-1 overflow-y-auto">
+<%- body %>
+</main>
+<!-- FOOTER -->🔷
+<footer class="bg-white text-center p-4 shadow">
+© 2026 - Bun MVC App
+</footer>
+</div>
+</div>
+<!-- SCRIPT -->🔷
+<script>
+function toggleSidebar() {
+const sidebar = document.getElementById('sidebar');
+sidebar.classList.toggle('-translate-x-full');
+}
+function toggleMenu() {
+const menu = document.getElementById('submenu');
+menu.classList.toggle('hidden');
+}
+function toggleProfile() {
+const profile = document.getElementById('profileMenu');
+profile.classList.toggle('hidden');
+}
+</script>
+</body>
+</html>
